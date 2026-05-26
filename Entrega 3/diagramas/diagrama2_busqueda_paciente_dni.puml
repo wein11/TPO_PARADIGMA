@@ -1,0 +1,44 @@
+@startuml Diagrama 2 - Busqueda de Paciente por DNI
+
+title Búsqueda de paciente por DNI
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+actor Usuario
+
+participant "VistaClinica\n(ui)" as Vista
+participant "ClinicaController\n(ui)" as Controller
+participant "PacienteServiceImpl\n(service)" as Servicio
+participant "RepositorioPaciente\n(repository)" as Repo
+
+Usuario -> Vista : selecciona "Buscar paciente por DNI"
+Vista -> Controller : buscarPacientePorDni()
+
+Controller -> Vista : pedirDni()
+Vista --> Usuario : "Ingrese el DNI: "
+Usuario --> Vista : dni (int)
+Vista --> Controller : dni
+
+Controller -> Servicio : buscarPorDni(dni)
+Servicio -> Repo : buscarPorDni(dni)\n[stream.filter().findFirst().orElse(null)]
+
+alt paciente encontrado
+  Repo --> Servicio : Paciente
+  Servicio --> Controller : Paciente
+  Controller -> Vista : mostrarMensaje(paciente.toString())
+  Vista --> Usuario : "[OK] Paciente #ID: Nombre Apellido | DNI: ..."
+else paciente NO encontrado
+  Repo --> Servicio : null
+  Servicio --> Controller : throws PacienteNoEncontradoException\n("No se encontró un paciente con DNI: X")
+  Controller -> Vista : mostrarError(e.getMessage())
+  Vista --> Usuario : "[ERROR] No se encontró un paciente con DNI: X"
+end
+
+Controller -> Vista : pausar()
+Vista --> Usuario : "Presione ENTER para continuar..."
+
+@enduml

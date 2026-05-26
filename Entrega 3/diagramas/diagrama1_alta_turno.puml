@@ -1,0 +1,73 @@
+@startuml Diagrama 1 - Alta de Turno
+
+title Alta de un nuevo turno
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+actor Usuario
+
+participant "VistaClinica\n(ui)" as Vista
+participant "ClinicaController\n(ui)" as Controller
+participant "TurnoServiceImpl\n(service)" as ServicioTurno
+participant "PacienteServiceImpl\n(service)" as ServicioPaciente
+participant "OdontologoServiceImpl\n(service)" as ServicioOdontologo
+participant "RepositorioTurno\n(repository)" as RepoTurno
+
+Usuario -> Vista : selecciona "Registrar turno"
+Vista -> Controller : registrarTurno()
+Controller -> Vista : pedirDatosTurno()
+Vista --> Controller : DatoTurno(idPaciente, idOdontologo, fecha, hora)
+
+Controller -> ServicioTurno : registrarTurno(idPaciente, idOdontologo, fecha, hora)
+
+group crearTurno
+  ServicioTurno -> ServicioPaciente : buscarPorId(idPaciente)
+  alt paciente no encontrado
+    ServicioPaciente --> ServicioTurno : throws PacienteNoEncontradoException
+    ServicioTurno --> Controller : throws PacienteNoEncontradoException
+    Controller -> Vista : mostrarError(e.getMessage())
+    Vista --> Usuario : "[ERROR] No se encontró un paciente con ID: X"
+  else paciente encontrado
+    ServicioPaciente --> ServicioTurno : Paciente
+  end
+
+  ServicioTurno -> ServicioOdontologo : buscarPorId(idOdontologo)
+  alt odontologo no encontrado
+    ServicioOdontologo --> ServicioTurno : throws OdontologoNoEncontradoException
+    ServicioTurno --> Controller : throws OdontologoNoEncontradoException
+    Controller -> Vista : mostrarError(e.getMessage())
+    Vista --> Usuario : "[ERROR] No se encontró un odontólogo con ID: X"
+  else odontologo encontrado
+    ServicioOdontologo --> ServicioTurno : Odontologo
+  end
+end
+
+group guardar(turno)
+  ServicioTurno -> ServicioTurno : validarDatos(turno)
+  alt datos inválidos (fecha pasada, horario fuera de rango, etc.)
+    ServicioTurno --> Controller : throws DatoInvalidoException
+    Controller -> Vista : mostrarError(e.getMessage())
+    Vista --> Usuario : "[ERROR] descripcion del error"
+  end
+
+  ServicioTurno -> RepoTurno : listarTodos() [stream.anyMatch]
+  alt odontólogo ya tiene turno en esa fecha y hora
+    RepoTurno --> ServicioTurno : true
+    ServicioTurno --> Controller : throws TurnoYaReservadoException
+    Controller -> Vista : mostrarError(e.getMessage())
+    Vista --> Usuario : "[ERROR] El odontólogo ya tiene un turno asignado el..."
+  else horario disponible
+    RepoTurno --> ServicioTurno : false
+    ServicioTurno -> RepoTurno : guardar(turno)
+    RepoTurno --> ServicioTurno : ok
+    ServicioTurno --> Controller : true
+    Controller -> Vista : mostrarMensaje("Turno registrado correctamente.")
+    Vista --> Usuario : "[OK] Turno registrado correctamente."
+  end
+end
+
+@enduml
