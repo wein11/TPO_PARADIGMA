@@ -151,6 +151,7 @@ public class TurnoServiceImpl implements iService<Turno> {
         return new Turno(id, paciente, odontologo, fecha, hora, estado);
     }
 
+    /* 
     private void verificarDisponibilidadOdontologo(Turno turno, long idTurno) throws TurnoYaReservadoException {
         if (turno.getEstado() == EstadoTurno.CANCELADO) return;
         boolean ocupado = repositorio.listarTodos().stream()
@@ -163,6 +164,32 @@ public class TurnoServiceImpl implements iService<Turno> {
             throw new TurnoYaReservadoException("El odontólogo ya tiene un turno asignado el "
                     + turno.getFecha() + " a las " + turno.getHora() + ".");
     }
+    */
+
+    private void verificarDisponibilidadOdontologo(Turno turno, long idTurno) throws TurnoYaReservadoException {
+    if (turno.getEstado() == EstadoTurno.CANCELADO) return;
+    
+    List<Turno> todos = repositorio.listarTodos();
+    int i = 0;
+    boolean ocupado = false;
+    
+    while (i < todos.size() && !ocupado) {
+        Turno t = todos.get(i);
+        if (t.getId() != idTurno
+                && t.getEstado() != EstadoTurno.CANCELADO
+                && t.getEstado() != EstadoTurno.COMPLETADO
+                && t.getOdontologo().getId() == turno.getOdontologo().getId()
+                && t.getFecha().equals(turno.getFecha())
+                && t.getHora().equals(turno.getHora())) {
+            ocupado = true;
+        }
+        i++;
+    }
+    
+    if (ocupado)
+        throw new TurnoYaReservadoException("El odontólogo ya tiene un turno asignado el "
+                + turno.getFecha() + " a las " + turno.getHora() + ".");
+}
 
     private boolean cambiarEstadoTurno(long id, EstadoTurno nuevoEstado) throws ClinicaException {
         Turno turno = repositorio.buscarPorId(id);
