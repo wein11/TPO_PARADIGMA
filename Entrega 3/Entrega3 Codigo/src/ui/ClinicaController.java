@@ -9,7 +9,7 @@ import service.OdontologoServiceImpl;
 import service.PacienteServiceImpl;
 import service.TurnoServiceImpl;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.List; 
 
 public class ClinicaController implements Runnable {
 
