@@ -11,7 +11,7 @@ import java.util.List;
 public class OdontologoServiceImpl implements iService<Odontologo> {
 
     private static final String SOLO_LETRAS = "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+";
-    private static final String MATRICULA_VALIDA = "[A-Za-z0-9-]{3,20}";
+    private static final String MATRICULA_VALIDA = "MAT-[0-9]{3,5}";
 
     private RepositorioOdontologo repositorio;
 
@@ -36,7 +36,7 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
         if (odontologo.getMatricula() == null || odontologo.getMatricula().trim().isEmpty())
             throw new DatoInvalidoException("La matrícula no puede estar vacía.");
         if (!odontologo.getMatricula().trim().matches(MATRICULA_VALIDA))
-            throw new DatoInvalidoException("La matrícula debe tener entre 3 y 20 caracteres alfanuméricos o guiones.");
+            throw new DatoInvalidoException("La matrícula debe tener el formato MAT- seguido de entre 3 y 5 dígitos (ej: MAT-001).");
     }
 
     @Override
