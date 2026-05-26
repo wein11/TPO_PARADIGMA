@@ -5,6 +5,7 @@ import model.Paciente;
 import repository.RepositorioPaciente;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,14 +14,22 @@ import java.util.List;
 
 public class PersistenciaPaciente {
 
-    private static final String ARCHIVO = "pacientes.csv";
+    private static final String NOMBRE_ARCHIVO = "pacientes.csv";
     private static final String SEPARADOR = ";";
+
+    // Busca el CSV en el directorio actual; si no existe, prueba un nivel arriba
+    private static String resolverRuta(String nombre) {
+        if (new File(nombre).exists()) return nombre;
+        String arriba = ".." + File.separator + nombre;
+        if (new File(arriba).exists()) return arriba;
+        return nombre; // si no existe en ningún lado, se creará en el directorio actual
+    }
 
     // Guarda todos los pacientes en el archivo CSV
     public static void guardar(List<Paciente> pacientes) {
         BufferedWriter escritor = null;
         try {
-            escritor = new BufferedWriter(new FileWriter(ARCHIVO));
+            escritor = new BufferedWriter(new FileWriter(resolverRuta(NOMBRE_ARCHIVO)));
             for (Paciente p : pacientes) {
                 escritor.write(serializar(p));
                 escritor.newLine();
@@ -38,7 +47,7 @@ public class PersistenciaPaciente {
     public static void cargar(RepositorioPaciente repositorio) {
         BufferedReader lector = null;
         try {
-            lector = new BufferedReader(new FileReader(ARCHIVO));
+            lector = new BufferedReader(new FileReader(resolverRuta(NOMBRE_ARCHIVO)));
             String linea;
             while ((linea = lector.readLine()) != null) {
                 if (!linea.isBlank()) {

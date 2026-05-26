@@ -9,6 +9,7 @@ import repository.RepositorioPaciente;
 import repository.RepositorioTurno;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,14 +19,22 @@ import java.util.List;
 
 public class PersistenciaTurno {
 
-    private static final String ARCHIVO = "turnos.csv";
+    private static final String NOMBRE_ARCHIVO = "turnos.csv";
     private static final String SEPARADOR = ";";
+
+    // Busca el CSV en el directorio actual; si no existe, prueba un nivel arriba
+    private static String resolverRuta(String nombre) {
+        if (new File(nombre).exists()) return nombre;
+        String arriba = ".." + File.separator + nombre;
+        if (new File(arriba).exists()) return arriba;
+        return nombre;
+    }
 
     // Guarda todos los turnos en el archivo CSV
     public static void guardar(List<Turno> turnos) {
         BufferedWriter escritor = null;
         try {
-            escritor = new BufferedWriter(new FileWriter(ARCHIVO));
+            escritor = new BufferedWriter(new FileWriter(resolverRuta(NOMBRE_ARCHIVO)));
             for (Turno t : turnos) {
                 escritor.write(serializar(t));
                 escritor.newLine();
@@ -45,7 +54,7 @@ public class PersistenciaTurno {
                                RepositorioOdontologo repositorioOdontologo) {
         BufferedReader lector = null;
         try {
-            lector = new BufferedReader(new FileReader(ARCHIVO));
+            lector = new BufferedReader(new FileReader(resolverRuta(NOMBRE_ARCHIVO)));
             String linea;
             while ((linea = lector.readLine()) != null) {
                 if (!linea.isBlank()) {
