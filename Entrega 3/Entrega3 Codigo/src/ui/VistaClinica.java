@@ -106,51 +106,61 @@ public class VistaClinica {
     }
 
     public DatoPaciente pedirDatosPaciente() {
+        DatoPaciente dato = new DatoPaciente();
+        System.out.print("Nombre: ");
+        dato.setNombre(scanner.nextLine().trim());
+        System.out.print("Apellido: ");
+        dato.setApellido(scanner.nextLine().trim());
+        System.out.print("DNI: ");
         try {
-            DatoPaciente dato = new DatoPaciente();
-            System.out.print("Nombre: ");
-            dato.setNombre(scanner.nextLine().trim());
-            System.out.print("Apellido: ");
-            dato.setApellido(scanner.nextLine().trim());
-            System.out.print("DNI: ");
             dato.setDni(Integer.parseInt(scanner.nextLine().trim()));
-            System.out.print("Email: ");
-            dato.setEmail(scanner.nextLine().trim());
-            System.out.print("Fecha de ingreso (AAAA-MM-DD): ");
-            dato.setFechaIngreso(LocalDate.parse(scanner.nextLine().trim()));
-            System.out.println("-- Domicilio --");
-            System.out.print("Calle: ");
-            dato.setCalle(scanner.nextLine().trim());
-            System.out.print("Numero: ");
-            dato.setNumeroCalle(Integer.parseInt(scanner.nextLine().trim()));
-            System.out.print("Localidad: ");
-            dato.setLocalidad(scanner.nextLine().trim());
-            System.out.print("Provincia: ");
-            dato.setProvincia(scanner.nextLine().trim());
-            return dato;
-        } catch (Exception e) {
-            System.out.println("[ERROR] Formato de dato invalido. Verifique DNI, numero de calle y fecha (AAAA-MM-DD).");
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] El DNI debe ser un numero entero.");
             return null;
         }
+        System.out.print("Email: ");
+        dato.setEmail(scanner.nextLine().trim());
+        System.out.print("Fecha de ingreso (AAAA-MM-DD): ");
+        try {
+            dato.setFechaIngreso(LocalDate.parse(scanner.nextLine().trim()));
+        } catch (Exception e) {
+            System.out.println("[ERROR] Formato de fecha invalido. Use AAAA-MM-DD (ej: 2024-03-15).");
+            return null;
+        }
+        System.out.println("-- Domicilio --");
+        System.out.print("Calle: ");
+        dato.setCalle(scanner.nextLine().trim());
+        System.out.print("Numero: ");
+        try {
+            dato.setNumeroCalle(Integer.parseInt(scanner.nextLine().trim()));
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] El numero de calle debe ser un numero entero.");
+            return null;
+        }
+        System.out.print("Localidad: ");
+        dato.setLocalidad(scanner.nextLine().trim());
+        System.out.print("Provincia: ");
+        dato.setProvincia(scanner.nextLine().trim());
+        return dato;
     }
 
     public DatoOdontologo pedirDatosOdontologo() {
+        DatoOdontologo dato = new DatoOdontologo();
+        System.out.print("Nombre: ");
+        dato.setNombre(scanner.nextLine().trim());
+        System.out.print("Apellido: ");
+        dato.setApellido(scanner.nextLine().trim());
+        System.out.print("Matricula (ej: MAT-001): ");
+        dato.setMatricula(scanner.nextLine().trim());
+        System.out.println("Tipo de especialista: 1=Ortodoncista  2=Endodoncista");
+        System.out.print("Opcion: ");
         try {
-            DatoOdontologo dato = new DatoOdontologo();
-            System.out.print("Nombre: ");
-            dato.setNombre(scanner.nextLine().trim());
-            System.out.print("Apellido: ");
-            dato.setApellido(scanner.nextLine().trim());
-            System.out.print("Matricula: ");
-            dato.setMatricula(scanner.nextLine().trim());
-            System.out.println("Tipo de especialista: 1=Ortodoncista  2=Endodoncista");
-            System.out.print("Opcion: ");
             dato.setTipoEspecialista(Integer.parseInt(scanner.nextLine().trim()));
-            return dato;
-        } catch (Exception e) {
-            System.out.println("[ERROR] Opcion de especialista invalida. Ingrese 1 o 2.");
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] La opcion debe ser 1 (Ortodoncista) o 2 (Endodoncista).");
             return null;
         }
+        return dato;
     }
 
     public int pedirDni() {
@@ -177,20 +187,35 @@ public class VistaClinica {
     }
 
     public DatoTurno pedirDatosTurno() {
+        DatoTurno dato = new DatoTurno();
+        System.out.print("ID del Paciente: ");
         try {
-            DatoTurno dato = new DatoTurno();
-            System.out.print("ID del Paciente: ");
             dato.setIdPaciente(Long.parseLong(scanner.nextLine().trim()));
-            System.out.print("ID del Odontologo: ");
-            dato.setIdOdontologo(Long.parseLong(scanner.nextLine().trim()));
-            System.out.print("Fecha (AAAA-MM-DD): ");
-            dato.setFecha(LocalDate.parse(scanner.nextLine().trim()));
-            System.out.print("Hora (HH:MM): ");
-            dato.setHora(LocalTime.parse(scanner.nextLine().trim()));
-            return dato;
-        } catch (Exception e) {
-            System.out.println("[ERROR] Formato invalido. Verifique IDs, fecha (AAAA-MM-DD) y hora (HH:MM).");
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] El ID del paciente debe ser un numero entero.");
             return null;
         }
+        System.out.print("ID del Odontologo: ");
+        try {
+            dato.setIdOdontologo(Long.parseLong(scanner.nextLine().trim()));
+        } catch (NumberFormatException e) {
+            System.out.println("[ERROR] El ID del odontologo debe ser un numero entero.");
+            return null;
+        }
+        System.out.print("Fecha (AAAA-MM-DD): ");
+        try {
+            dato.setFecha(LocalDate.parse(scanner.nextLine().trim()));
+        } catch (Exception e) {
+            System.out.println("[ERROR] Formato de fecha invalido. Use AAAA-MM-DD (ej: 2026-06-15).");
+            return null;
+        }
+        System.out.print("Hora (HH:MM): ");
+        try {
+            dato.setHora(LocalTime.parse(scanner.nextLine().trim()));
+        } catch (Exception e) {
+            System.out.println("[ERROR] Formato de hora invalido. Use HH:MM (ej: 09:00 o 14:30).");
+            return null;
+        }
+        return dato;
     }
 }
