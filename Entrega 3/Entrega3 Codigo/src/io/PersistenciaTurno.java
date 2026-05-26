@@ -1,6 +1,7 @@
 package io;
 
 import model.EstadoTurno;
+import model.HistorialClinico;
 import model.Odontologo;
 import model.Paciente;
 import model.Turno;
@@ -50,7 +51,15 @@ public class PersistenciaTurno {
             while ((linea = lector.readLine()) != null) {
                 if (!linea.isBlank()) {
                     Turno turno = deserializar(linea, repositorioPaciente, repositorioOdontologo);
-                    if (turno != null) repositorioTurno.cargarEntidad(turno);
+                    if (turno != null) {
+                        repositorioTurno.cargarEntidad(turno);
+                        // Reconstruir el historial clínico del paciente a partir de los turnos del CSV
+                        Paciente paciente = turno.getPaciente();
+                        if (paciente.getHistorialClinico() == null) {
+                            paciente.setHistorialClinico(new HistorialClinico(paciente.getId(), paciente, "Sin antecedentes registrados"));
+                        }
+                        paciente.getHistorialClinico().actualizarTurno(turno);
+                    }
                 }
             }
         } catch (IOException e) {
