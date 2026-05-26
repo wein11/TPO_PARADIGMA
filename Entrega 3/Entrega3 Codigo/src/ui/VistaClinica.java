@@ -109,9 +109,19 @@ public class VistaClinica {
         try {
             DatoPaciente dato = new DatoPaciente();
             System.out.print("Nombre: ");
-            dato.setNombre(scanner.nextLine().trim());
+            String nombre = scanner.nextLine().trim();
+            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+")) {
+                System.out.println("[ERROR] El nombre solo puede contener letras.");
+                return null;
+            }
+            dato.setNombre(nombre);
             System.out.print("Apellido: ");
-            dato.setApellido(scanner.nextLine().trim());
+            String apellido = scanner.nextLine().trim();
+            if (!apellido.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+")) {
+                System.out.println("[ERROR] El apellido solo puede contener letras.");
+                return null;
+            }
+            dato.setApellido(apellido);
             System.out.print("DNI: ");
             dato.setDni(Integer.parseInt(scanner.nextLine().trim()));
             System.out.print("Email: ");
